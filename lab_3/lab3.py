@@ -43,7 +43,7 @@ def svm(x, w, b):
 
 
 def optimise(
-    optimiser: optim.Optimizer, epochs: int = 100
+    optimiser: optim.Optimizer, epochs: int = 1000
 ) -> Tuple[Array[float], Array[float]]:
     # Extract only parameter so it can be referenced
     p = optimiser.param_groups[0]["params"][0]
@@ -94,11 +94,18 @@ def ex_1():
     X, Y, Z = get_data()
     p_base = torch.tensor([[5.0], [5.0]], requires_grad=True)
     p = lambda: p_base.clone().detach().requires_grad_(True)
-    lr = 0.001
+    lr = 0.01
     sgd_path, sgd_losses = optimise(optim.SGD([p()], lr=lr))
     sgd_mom_path, sgd_mom_losses = optimise(optim.SGD([p()], lr=lr, momentum=0.9))
     adagrad_path, adagrad_losses = optimise(optim.Adagrad([p()], lr=lr))
     adam_path, adam_losses = optimise(optim.Adam([p()], lr=lr, betas=[0.7, 0.999]))
+
+    fig = plt.figure()
+    plt.plot(sgd_losses, label="SGD")
+    plt.plot(sgd_mom_losses, label="SGD + Momentum")
+    plt.plot(adagrad_losses, label="Adagrad")
+    plt.plot(adam_losses, label="Adam")
+    plt.legend()
 
     fig = plt.figure(figsize=(8, 5))
     ax = plt.axes(projection="3d", elev=50, azim=-50)
@@ -201,7 +208,7 @@ if __name__ == "__main__":
 
     w = torch.randn(1, 4, requires_grad=True)
     b = torch.randn(1, requires_grad=True)
-    opt = optim.SGD([w, b], lr=0.1, weight_decay=0.0001)
+    opt = optim.SGD([w, b], lr=0.01, weight_decay=0.0001)
     sgd_w_path, sgd_b_path, sgd_losses = optimise_svm(opt, dataloader)
 
     w = torch.randn(1, 4, requires_grad=True)
