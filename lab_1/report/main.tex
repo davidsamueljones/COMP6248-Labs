@@ -92,22 +92,22 @@ David Jones (dsj1n15@soton.ac.uk)}
     2.941 & 0.530 & 2.262
 \end{bmatrix}\quad
 &&\mathbf{\hat{U}} = \begin{bmatrix}
-    -0.063 & -0.906\\
-    -2.387 &  \phantom{-}0.683\\
-    -2.059 & -0.707
+    0.617 & -0.153 \\
+    0.411 & \phantom{-}1.596 \\
+    1.080 & \phantom{-}1.180
 \end{bmatrix}\quad
 \mathbf{\hat{V}} = \begin{bmatrix}
-    -1.414 & -0.149\\
-    -0.131 & -0.500\\
-    -0.916 & -0.346
+    0.813 & \phantom{-}1.829 \\
+    0.784 & -0.209 \\
+    0.838 & \phantom{-}1.020
 \end{bmatrix}&\\[4pt]
 \mathbf{\hat{A}} = \mathbf{\hat{U}\hat{V}^\top} &=
 \begin{bmatrix}
-    0.224 &  \phantom{-}0.462 &  0.371\\
-    3.271 & -0.0301 &  1.950\\
-    3.016 &  \phantom{-}0.623 &  2.131
+    0.221 & \phantom{-}0.515 & 0.361 \\
+    3.253 & -0.011 & 1.972 \\
+    3.036 & \phantom{-}0.600 & 2.108
 \end{bmatrix}\quad &&
-\boxed{\text{loss} =\norm{\mathbf{A}-\mathbf{\hat{A}}}^2_\text{F}=0.1257} &
+\boxed{\text{loss} =\norm{\mathbf{A}-\mathbf{\hat{A}}}^2_\text{F}=0.1220} &
 \end{alignat*}
 % \end{equation*}
 
@@ -144,7 +144,7 @@ David Jones (dsj1n15@soton.ac.uk)}
 \boxed{\text{loss} =\norm{\mathbf{A}-\mathbf{\hat{A}}}^2_\text{F}=0.1219}
 \end{alignat*}
 
-\noindent The reconstruction loss of the SVD approach is less than that of the SGD approach. This is explained by the Eckart-Young theorem, which states that a low-rank approximation created using SVD is optimum for that rank.
+\noindent The reconstruction loss of the SVD approach is less than that of the SGD approach. This is explained by the Eckart-Young theorem, which states that a low-rank approximation created using SVD is optimum for that rank. That being said the approximation for SGD is near optimal.
 
 \section{Exercise 3}
 \textbf{Exercise 3.1:} Masked matrix factorisation.
@@ -161,24 +161,24 @@ David Jones (dsj1n15@soton.ac.uk)}
         2.941 &  \cancel{0.530} & 2.262
     \end{bmatrix}\quad
     &&\mathbf{\hat{U}} = \begin{bmatrix}
-        -0.216 &  0.2940\\
-        -1.544 &  0.4287\\
-        -1.769 &  0.7095\\
+        0.561 & -0.416 \\
+        0.940 & \phantom{-}1.107 \\
+        1.502 & \phantom{-}0.991
     \end{bmatrix}\quad
     \mathbf{\hat{V}} = \begin{bmatrix}
-        -2.025 & -0.882\\
-        \phantom{-}0.463 &  \phantom{-}1.815\\
-        -0.993 &  \phantom{-}0.680\\
+        1.323 & \phantom{-}0.961 \\
+        0.676 & -0.530 \\
+        0.939 & \phantom{-}0.861
     \end{bmatrix}&\\[4pt]
     \mathbf{\hat{A}} = \mathbf{\hat{U}\hat{V}^\top} &=
     \begin{bmatrix}
-        0.178 & 0.433 & 0.414\\
-        \boxed{2.749} & 0.064 & 1.825\\
-        2.955 & \boxed{0.470} & 2.239
+        0.342 & 0.599 & 0.168 \\
+        \boxed{2.308} & 0.049 & 1.836 \\
+        2.940 & \boxed{0.491} & 2.264
     \end{bmatrix}\quad &&
-    \text{loss} =\norm{\mathbf{A}-\mathbf{\hat{A}}}^2_\text{F}=0.4610 &
+    \text{loss} =\norm{\mathbf{A}-\mathbf{\hat{A}}}^2_\text{F}=1.0579 &
     \end{alignat*}
-\noindent Both of the reconstructed values in $\mathbf{\hat{A}}$ are close to their original values in $\mathbf{A}$. This indicates that information defining their  value was carried in the other values of the matrix. Some of this information is captured in the reduced rank approximation and projected back to create the masked values.
+\noindent Both of the reconstructed values in $\mathbf{\hat{A}}$ are close to their original values in $\mathbf{A}$. This indicates that information defining their value was carried in the other values of the matrix. Some of this information is captured in the reduced rank approximation and projected back to create the masked values. The majority of loss is attributed to $\mathbf{\hat{a}_{10}}$; this may indicate that more of its value was independent of all other values.
 
 
 \end{document}

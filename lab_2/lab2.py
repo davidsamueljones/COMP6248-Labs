@@ -8,7 +8,7 @@ from torch import DoubleTensor, Tensor
 from matplotlib import rc
 
 
-def sgd_factorise_ad(
+def gd_factorise_ad(
     A: Tensor, rank: int, num_epochs: int = 1000, lr: float = 0.01
 ) -> Tuple[Tensor, Tensor]:
     (m, n) = A.shape
@@ -42,7 +42,7 @@ def lab_1_test():
         dtype=torch.double,
     )
     rank = 2
-    (U, V) = sgd_factorise_ad(A, rank)
+    (U, V) = gd_factorise_ad(A, rank)
     A_sgd_hat = U @ V.t()
     sgd_loss = torch.nn.functional.mse_loss(A_sgd_hat, A, reduction="sum")
     print(A_sgd_hat)
@@ -61,7 +61,7 @@ def ex_1():
     D = data
     rank = 2
     # Get SGD and SVD Result
-    (U_hat, V) = sgd_factorise_ad(D, rank)
+    (U_hat, V) = gd_factorise_ad(D, rank)
     D_sgd_hat = U_hat @ V.t()
     sgd_loss = torch.nn.functional.mse_loss(D_sgd_hat, D, reduction="sum")
     (U, S, V) = svd_factorise(D, rank)

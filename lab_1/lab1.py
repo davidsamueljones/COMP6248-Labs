@@ -8,8 +8,8 @@ def sgd_factorise(
     A: Tensor, rank: int, num_epochs: int = 1000, lr: float = 0.01
 ) -> Tuple[Tensor, Tensor]:
     (m, n) = A.shape
-    U = torch.randn((m, rank))
-    V = torch.randn((n, rank))
+    U = torch.rand((m, rank))
+    V = torch.rand((n, rank))
     for epoch in range(num_epochs):
         e = A - U @ V.t()
         for r in range(m):
@@ -23,8 +23,8 @@ def sgd_factorise_masked(
     A: Tensor, M: Tensor, rank: int, num_epochs: int = 1000, lr: float = 0.01
 ) -> Tuple[Tensor, Tensor]:
     (m, n) = A.shape
-    U = torch.randn((m, rank))
-    V = torch.randn((n, rank))
+    U = torch.rand((m, rank))
+    V = torch.rand((n, rank))
     for epoch in range(num_epochs):
         e = A - U @ V.t()
         for r in range(m):
@@ -42,9 +42,6 @@ def svd_factorise(A: Tensor, rank: int) -> Tuple[Tensor, Tensor, Tensor]:
 
 
 if __name__ == "__main__":
-    torch.manual_seed(0)
-    # torch.set_default_dtype(torch.float64)
-
     A = torch.tensor(
         [
             [0.3374, 0.6005, 0.1735],  #
@@ -52,6 +49,23 @@ if __name__ == "__main__":
             [2.9407, 0.5301, 2.2620],  #
         ]
     )
+
+    # Exercise 1
+    torch.manual_seed(0)
+    rank = 2
+    (U, V) = sgd_factorise(A, rank)
+    A_sgd_hat = U @ V.t()
+    sgd_loss = torch.nn.functional.mse_loss(A_sgd_hat, A, reduction="sum")
+    print("SGD Loss: {}".format(sgd_loss))
+
+    # Exercise 2
+    (U, S, V) = svd_factorise(A, rank)
+    A_svd_hat = U @ S @ V.t()
+    svd_loss = torch.nn.functional.mse_loss(A_svd_hat, A, reduction="sum")
+    print("SVD Loss: {}".format(svd_loss))
+
+    # Exercise 3
+    torch.manual_seed(2)
     M = torch.tensor(
         [
             [1, 1, 1],  #
@@ -60,19 +74,7 @@ if __name__ == "__main__":
         ],
         dtype=bool
     )
-    rank = 2
-    (U, V) = sgd_factorise(A, rank)
-    A_sgd_hat = U @ V.t()
-    sgd_loss = torch.nn.functional.mse_loss(A_sgd_hat, A, reduction="sum")
-    (U, S, V) = svd_factorise(A, rank)
-    A_svd_hat = U @ S @ V.t()
-
-    svd_loss = torch.nn.functional.mse_loss(A_svd_hat, A, reduction="sum")
-    print("SGD Loss: {}".format(sgd_loss))
-    print("SVD Loss: {}".format(svd_loss))
     (U, V) = sgd_factorise_masked(A, M, rank)
-    print(U)
-    print(V)
     A_sgd_masked_hat = U @ V.t()
     masked_loss = torch.nn.functional.mse_loss(A_sgd_masked_hat, A, reduction="sum")
     print("Masked Estimate: ")
