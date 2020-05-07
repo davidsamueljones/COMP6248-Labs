@@ -42,7 +42,7 @@ def svd_factorise(A: Tensor, rank: int) -> Tuple[Tensor, Tensor, Tensor]:
 
 
 if __name__ == "__main__":
-    # torch.manual_seed(0)
+    torch.manual_seed(0)
     # torch.set_default_dtype(torch.float64)
 
     A = torch.tensor(
@@ -66,11 +66,16 @@ if __name__ == "__main__":
     sgd_loss = torch.nn.functional.mse_loss(A_sgd_hat, A, reduction="sum")
     (U, S, V) = svd_factorise(A, rank)
     A_svd_hat = U @ S @ V.t()
+
     svd_loss = torch.nn.functional.mse_loss(A_svd_hat, A, reduction="sum")
     print("SGD Loss: {}".format(sgd_loss))
     print("SVD Loss: {}".format(svd_loss))
     (U, V) = sgd_factorise_masked(A, M, rank)
+    print(U)
+    print(V)
     A_sgd_masked_hat = U @ V.t()
+    masked_loss = torch.nn.functional.mse_loss(A_sgd_masked_hat, A, reduction="sum")
     print("Masked Estimate: ")
     print(A_sgd_masked_hat.numpy())
-
+    print("Masked Loss: ", masked_loss)
+    # print(A - A_sgd_masked_hat)

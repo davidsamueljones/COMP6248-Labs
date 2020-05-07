@@ -1,0 +1,185 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[top=1.2cm, bottom=1.8cm, left=1.8cm, right=1.8cm]{geometry}
+
+\usepackage{float}
+\usepackage{subfig}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[utf8]{inputenc}
+\usepackage{enumitem}
+\usepackage{siunitx}
+\usepackage[newfloat]{minted}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{amsfonts,amssymb}
+\usepackage[makeroom]{cancel}
+
+% Declarations for tikz drawings
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\definecolor{lightgreen}{HTML}{90EE90}
+\newcommand*{\boxcolor}{lightgreen}
+\makeatletter
+\renewcommand{\boxed}[1]{\textcolor{\boxcolor}{%
+\tikz[baseline={([yshift=-1ex]current bounding box.center)}] \node [rectangle, minimum width=5ex,rounded corners,draw,line width=0.25mm] {\normalcolor\m@th$\displaystyle#1$};}}
+ \makeatother
+
+ % Fix for symbol errors in code listings (see https://tex.stackexchange.com/a/343506)
+ \usepackage{etoolbox,xpatch}
+ \makeatletter
+ \AtBeginEnvironment{minted}{\dontdofcolorbox}
+ \def\dontdofcolorbox{\renewcommand\fcolorbox[4][]{##4}}
+ \xpatchcmd{\inputminted}{\minted@fvset}{\minted@fvset\dontdofcolorbox}{}{}
+ \xpatchcmd{\mintinline}{\minted@fvset}{\minted@fvset\dontdofcolorbox}{}{}
+ \makeatother
+ % Fix for distance of captions from listings
+ \captionsetup[listing]{skip=-10pt}
+
+% \usepackage[style=authoryear, backend=biber]{biblatex}
+% \addbibresource{main.bib}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\title{COMP6248: Lab Exercise 1}
+\author{
+David Jones (dsj1n15@soton.ac.uk)}
+\date{}
+\setlength{\intextsep}{1mm}
+
+\definecolor{mintedbackground}{rgb}{0.95,0.95,0.95}
+\newmintedfile[pythoncode]{python}{
+    bgcolor=mintedbackground,
+    style=friendly,
+    % fontfamily=fi4,
+    fontsize=\small,
+    linenos=true,
+    numberblanklines=true,
+    numbersep=5pt,
+    gobble=0,
+    frame=leftline,
+    framerule=0.4pt,
+    framesep=2mm,
+    funcnamehighlighting=true,
+    tabsize=4,
+    obeytabs=false,
+    mathescape=false
+    samepage=false,
+    showspaces=false,
+    showtabs =false,
+    texcl=false,
+}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+\begin{document}
+
+\maketitle
+\textbf{Task:} Gradients and matrices in PyTorch
+\vspace{-0.5em}
+\section{Exercise 1}
+\textbf{Exercise 1.1:} Implementation of matrix factorisation using gradient descent.
+\begin{listing}[H]
+\pythoncode{code/sgd_factorise.py}
+\caption{Matrix factorisation using stochastic gradient descent (SGD).}
+\label{lst:sgd}
+\end{listing}
+\noindent\textbf{Exercise 1.2:} Rank 2 reconstruction loss for input $\mathbf{A}$.\\
+\vspace{-0.5em}
+\begin{alignat*}{3}
+\mathbf{A} &= \begin{bmatrix}
+    0.337 & 0.601 & 0.174\\
+    3.336 & 0.049 & 1.837\\
+    2.941 & 0.530 & 2.262
+\end{bmatrix}\quad
+&&\mathbf{\hat{U}} = \begin{bmatrix}
+    -0.063 & -0.906\\
+    -2.387 &  \phantom{-}0.683\\
+    -2.059 & -0.707
+\end{bmatrix}\quad
+\mathbf{\hat{V}} = \begin{bmatrix}
+    -1.414 & -0.149\\
+    -0.131 & -0.500\\
+    -0.916 & -0.346
+\end{bmatrix}&\\[4pt]
+\mathbf{\hat{A}} = \mathbf{\hat{U}\hat{V}^\top} &=
+\begin{bmatrix}
+    0.224 &  \phantom{-}0.462 &  0.371\\
+    3.271 & -0.0301 &  1.950\\
+    3.016 &  \phantom{-}0.623 &  2.131
+\end{bmatrix}\quad &&
+\boxed{\text{loss} =\norm{\mathbf{A}-\mathbf{\hat{A}}}^2_\text{F}=0.1257} &
+\end{alignat*}
+% \end{equation*}
+
+\section{Exercise 2}
+\textbf{Exercise 2.1:} Matrix factorisation using Singular Value Decomposition (SVD).
+\begin{listing}[H]
+\pythoncode{code/svd_factorise.py}
+\caption{Matrix factorisation using SVD.}
+\label{lst:svd_factorise}
+\end{listing}
+\vspace{-1.0em}
+\begin{alignat*}{2}
+\mathbf{\hat{U}} &= \begin{bmatrix}
+-0.080 & -0.745 & \phantom{-}0.663\\
+-0.710 & \phantom{-}0.509 & \phantom{-}0.486\\
+-0.699 & -0.432 & -0.570
+\end{bmatrix}\quad
+\Sigma = \begin{bmatrix}
+5.334 & 0.000 & 0.000\phantom{-}\\
+0.000 & 0.696 & 0.000\phantom{-}\\
+0.000 & 0.000 & \cancelto{0}{0.349}
+\end{bmatrix}\quad
+\mathbf{\hat{V}} = \begin{bmatrix}
+-0.835 & \phantom{-}0.255 & \phantom{-}0.488\\
+-0.085 & -0.936 & \phantom{-}0.343\\
+-0.544 & -0.245 & -0.803
+\end{bmatrix}\\
+\mathbf{\hat{A}} &= \mathbf{\hat{U}\Sigma\hat{V}^\top} =
+\begin{bmatrix}
+0.225 & \phantom{-}0.521 & 0.359\\
+3.253 & -0.0090 & 1.974\\
+3.038 & \phantom{-}0.598 & 2.102
+\end{bmatrix}\quad
+\boxed{\text{loss} =\norm{\mathbf{A}-\mathbf{\hat{A}}}^2_\text{F}=0.1219}
+\end{alignat*}
+
+\noindent The reconstruction loss of the SVD approach is less than that of the SGD approach. This is explained by the Eckart-Young theorem, which states that a low-rank approximation created using SVD is optimum for that rank.
+
+\section{Exercise 3}
+\textbf{Exercise 3.1:} Masked matrix factorisation.
+\begin{listing}[H]
+    \pythoncode{code/sgd_factorise_masked.py}
+    \caption{Masked matrix factorisation using stochastic gradient descent (SGD).}
+    \label{lst:sgd_masked}
+    \end{listing}
+\noindent\textbf{Exercise 3.2:} Reconstructing a matrix using masked factorisation.
+\begin{alignat*}{3}
+    \mathbf{A} &= \begin{bmatrix}
+        0.337 & 0.601 & 0.174\\
+        \cancel{3.336} & 0.049 & 1.837\\
+        2.941 &  \cancel{0.530} & 2.262
+    \end{bmatrix}\quad
+    &&\mathbf{\hat{U}} = \begin{bmatrix}
+        -0.216 &  0.2940\\
+        -1.544 &  0.4287\\
+        -1.769 &  0.7095\\
+    \end{bmatrix}\quad
+    \mathbf{\hat{V}} = \begin{bmatrix}
+        -2.025 & -0.882\\
+        \phantom{-}0.463 &  \phantom{-}1.815\\
+        -0.993 &  \phantom{-}0.680\\
+    \end{bmatrix}&\\[4pt]
+    \mathbf{\hat{A}} = \mathbf{\hat{U}\hat{V}^\top} &=
+    \begin{bmatrix}
+        0.178 & 0.433 & 0.414\\
+        \boxed{2.749} & 0.064 & 1.825\\
+        2.955 & \boxed{0.470} & 2.239
+    \end{bmatrix}\quad &&
+    \text{loss} =\norm{\mathbf{A}-\mathbf{\hat{A}}}^2_\text{F}=0.4610 &
+    \end{alignat*}
+\noindent Both of the reconstructed values in $\mathbf{\hat{A}}$ are close to their original values in $\mathbf{A}$. This indicates that information defining their  value was carried in the other values of the matrix. Some of this information is captured in the reduced rank approximation and projected back to create the masked values.
+
+
+\end{document}
+
