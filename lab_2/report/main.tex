@@ -1,0 +1,127 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[top=1.2cm, bottom=1.8cm, left=1.8cm, right=1.8cm]{geometry}
+
+\usepackage{float}
+\usepackage{subfig}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[utf8]{inputenc}
+\usepackage{enumitem}
+\usepackage{siunitx}
+\usepackage[newfloat]{minted}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{amsfonts,amssymb}
+\usepackage[makeroom]{cancel}
+
+% Declarations for tikz drawings
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{calc}
+\definecolor{lightgreen}{HTML}{90EE90}
+\newcommand*{\boxcolor}{lightgreen}
+\makeatletter
+\renewcommand{\boxed}[1]{\textcolor{\boxcolor}{%
+\tikz[baseline={([yshift=-1ex]current bounding box.center)}] \node [rectangle, minimum width=5ex,rounded corners,draw,line width=0.25mm] {\normalcolor\m@th$\displaystyle#1$};}}
+ \makeatother
+
+ % Fix for symbol errors in code listings (see https://tex.stackexchange.com/a/343506)
+ \usepackage{etoolbox,xpatch}
+ \makeatletter
+ \AtBeginEnvironment{minted}{\dontdofcolorbox}
+ \def\dontdofcolorbox{\renewcommand\fcolorbox[4][]{##4}}
+ \xpatchcmd{\inputminted}{\minted@fvset}{\minted@fvset\dontdofcolorbox}{}{}
+ \xpatchcmd{\mintinline}{\minted@fvset}{\minted@fvset\dontdofcolorbox}{}{}
+ \makeatother
+ % Fix for distance of captions from listings
+ \captionsetup[listing]{skip=-10pt}
+
+% \usepackage[style=authoryear, backend=biber]{biblatex}
+% \addbibresource{main.bib}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\title{COMP6248: Lab Exercise 2}
+\author{
+David Jones (dsj1n15@soton.ac.uk)}
+\date{}
+\setlength{\intextsep}{1mm}
+
+\definecolor{mintedbackground}{rgb}{0.95,0.95,0.95}
+\newmintedfile[pythoncode]{python}{
+    bgcolor=mintedbackground,
+    style=friendly,
+    % fontfamily=fi4,
+    fontsize=\small,
+    linenos=true,
+    numberblanklines=true,
+    numbersep=5pt,
+    gobble=0,
+    frame=leftline,
+    framerule=0.4pt,
+    framesep=2mm,
+    funcnamehighlighting=true,
+    tabsize=4,
+    obeytabs=false,
+    mathescape=false
+    samepage=false,
+    showspaces=false,
+    showtabs =false,
+    texcl=false,
+}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+\begin{document}
+
+\maketitle
+\textbf{Task:} PyTorch Autograd
+\vspace{-0.5em}
+\section{Exercise 1}
+\textbf{Exercise 1.1:} Implementation of matrix factorisation using gradient descent.
+\begin{listing}[H]
+\pythoncode{code/gd_factorise_ad.py}
+\caption{Matrix factorisation using gradient descent with PyTorch’s AD.}
+\label{lst:gd}
+\end{listing}
+\noindent\textbf{Exercise 1.2:} Rank 2 reconstruction loss for Iris Dataset.\\
+\vspace{-1.5em}
+\begin{alignat*}{1}
+    &\textbf{A} = \text{Iris Dataset} - \mu \\
+    \text{loss}_{\text{GD}} =\norm{\mathbf{A}-\mathbf{\hat{A}}_{\text{GD}}}^2_\text{F}=15.232\quad
+    &\text{loss}_{\text{SVD}} =\norm{\mathbf{A}-\mathbf{\hat{A}}_{\text{SVD}}}^2_\text{F}=15.229
+\end{alignat*}
+As expected $\text{loss}_{\text{SVD}}$ is less than $\text{loss}_{\text{GD}}$, yet $\mathbf{\hat{A}}_\text{GD}$ is a close approximation of the optimum.
+
+
+\vspace{1em}
+\noindent\textbf{Exercise 1.3:} PCA vs GD Rank Reduction.\\
+\begin{figure}[H]
+    \centering
+    \begin{tabular}{cc}
+    \subfloat[PCA]{\input{figures/pca.pgf}}
+    \hspace{1.5mm}
+    \subfloat[GD]{\input{figures/gd.pgf}}
+    \end{tabular}
+    \caption{Rank 2 reduction on the Iris Dataset}
+    \label{fig:pca_sg}
+\end{figure}
+\noindent The groupings of the data factorised by PCA and GD are very similar. It appears that a linear rotation and scaling transformation would map one to the other. A consequence of PCA maximising the variance is that the reconstruction error will be minimised -- this is the loss function being used by the GD. Although the mapped values are not identical, GD is not being applied to a multi-layer perceptron so it can at most learn a linear mapping of PCA.
+
+\section{Exercise 2}
+\noindent\textbf{Exercise 2.1:} Multi-Layer Perceptron (MLP).\\
+\begin{listing}[H]
+    \pythoncode{code/mlp.py}
+    \caption{PyTorch MLP Classifier for Iris Dataset}
+    \label{lst:mlp}
+    \end{listing}
+\noindent\textbf{Exercise 2.2:} MLP classification on Iris Dataset.\\
+\noindent Below are the median train and validation results for classifying the Iris Dataset across 100 independent trainings. The order of class results are $\begin{bmatrix}\text{Iris setosa}, \text{Iris versicolor}, \text{Iris virginica}\end{bmatrix}$.
+\begin{alignat*}{1}
+\text{Acc}_\text{train} &= \begin{bmatrix}1.000 & 0.806 & 0.969\end{bmatrix}\quad |\quad \text{Overall} = 0.92\\
+\text{Acc}_\text{validation} &= \begin{bmatrix}1.000 & 0.786 & 0.889\end{bmatrix}\quad |\quad \text{Overall} = 0.90
+\end{alignat*}
+This lines up with the rank reduction which shows Iris setosa is highly separable from the other classes. The results show that differentiating between Iris versicolor and Iris virginica is still not always possible even with the higher rank information. Validation accuracy is less for all groups, indicating either a lack of required diversity in the training set or overfitting.
+
+\end{document}
+
