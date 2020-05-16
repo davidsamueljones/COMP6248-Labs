@@ -1,0 +1,91 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[top=1.2cm, bottom=1.8cm, left=1.8cm, right=1.8cm]{geometry}
+
+\usepackage{float}
+\usepackage{subfig}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[utf8]{inputenc}
+\usepackage{enumitem}
+\usepackage{siunitx}
+\usepackage[newfloat]{minted}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{amsfonts,amssymb}
+\usepackage[makeroom]{cancel}
+
+% Declarations for tikz drawings
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{calc}
+\definecolor{lightgreen}{HTML}{90EE90}
+\newcommand*{\boxcolor}{lightgreen}
+\makeatletter
+\renewcommand{\boxed}[1]{\textcolor{\boxcolor}{%
+\tikz[baseline={([yshift=-1ex]current bounding box.center)}] \node [rectangle, minimum width=5ex,rounded corners,draw,line width=0.25mm] {\normalcolor\m@th$\displaystyle#1$};}}
+ \makeatother
+
+ % Fix for symbol errors in code listings (see https://tex.stackexchange.com/a/343506)
+ \usepackage{etoolbox,xpatch}
+ \makeatletter
+ \AtBeginEnvironment{minted}{\dontdofcolorbox}
+ \def\dontdofcolorbox{\renewcommand\fcolorbox[4][]{##4}}
+ \xpatchcmd{\inputminted}{\minted@fvset}{\minted@fvset\dontdofcolorbox}{}{}
+ \xpatchcmd{\mintinline}{\minted@fvset}{\minted@fvset\dontdofcolorbox}{}{}
+ \makeatother
+ % Fix for distance of captions from listings
+ \captionsetup[listing]{skip=-10pt}
+
+% \usepackage[style=authoryear, backend=biber]{biblatex}
+% \addbibresource{main.bib}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\title{COMP6248: Lab Exercise 5}
+\author{
+David Jones (dsj1n15@soton.ac.uk)}
+\date{}
+\setlength{\intextsep}{1mm}
+
+\definecolor{mintedbackground}{rgb}{0.95,0.95,0.95}
+\newmintedfile[pythoncode]{python}{
+    bgcolor=mintedbackground,
+    style=friendly,
+    % fontfamily=fi4,
+    fontsize=\small,
+    linenos=true,
+    numberblanklines=true,
+    numbersep=5pt,
+    gobble=0,
+    frame=leftline,
+    framerule=0.4pt,
+    framesep=2mm,
+    funcnamehighlighting=true,
+    tabsize=4,
+    obeytabs=false,
+    mathescape=false
+    samepage=false,
+    showspaces=false,
+    showtabs =false,
+    texcl=false,
+}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+\begin{document}
+
+\maketitle
+\textbf{Task:} CNN Linear Regression
+\vspace{-0.5em}
+\section{Exercise 1}
+\textbf{Exercise 1.1:} CNN Baseline
+
+\section{Exercise 2}
+\textbf{Exercise 2.1:} CNN with Global Pooling
+
+\section{Exercise 3}
+\textbf{Exercise 3.1:} CNN with CoordConv Input
+% https://medium.com/@Cambridge_Spark/coordconv-layer-deep-learning-e02d728c2311
+
+\end{document}
+
