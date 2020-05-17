@@ -43,7 +43,7 @@ def svm(x, w, b):
 
 
 def optimise(
-    optimiser: optim.Optimizer, epochs: int = 1000
+    optimiser: optim.Optimizer, epochs: int = 100
 ) -> Tuple[Array[float], Array[float]]:
     # Extract only parameter so it can be referenced
     p = optimiser.param_groups[0]["params"][0]
@@ -171,7 +171,7 @@ def ex_1():
         adagrad_path[0], adagrad_path[1], color="blue", label="Adagrad", linewidth=2
     )
 
-    # ax.legend()
+    ax.legend()
     ax.set_xlabel("$x$")
     ax.set_ylabel("$y$")
 
