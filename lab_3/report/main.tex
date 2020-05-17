@@ -75,13 +75,37 @@ David Jones (dsj1n15@soton.ac.uk)}
 \begin{document}
 
 \maketitle
-\textbf{Task:} Optimise it!
+\textbf{Task:} Optimisation
 \vspace{-0.5em}
 \section{Exercise 1}
 \textbf{Exercise 1.1:} Optimising the Rastrigin function
+\begin{figure}[H]
+    \centering
+    \begin{tabular}{cc}
+    \subfloat[Loss Plot]{\input{figures/loss_plot.pgf}}
+    \hspace{1.5mm}
+    \subfloat[XY Plot]{\input{figures/contour_plot.pgf}}
+    \end{tabular}
+    \caption{Optimisation of the Rastrigin function (A=1).}
+    \label{fig:pca_sg}
+\end{figure}
+\noindent Stochastic Gradient Descent with Momentum (SGD+M) converged to the smallest local minima and closest to the global minima; therefore it is considered to perform the best. However, it should be noted that all optimisers got stuck at non-global minima.
+
 
 \section{Exercise 2}
 \textbf{Exercise 2.1:} SVM optimisation on Iris Dataset
+
+\noindent Below are the median validation accuracies for classifying the \text{Iris Versicolor} and \text{Iris Virginica} classes of the Iris Dataset across 100 independent trainings.
+
+\begin{equation*}
+\text{Acc}_\text{SGD} = 0.96\quad
+\text{Acc}_\text{Adam} = 0.92\quad
+\text{Acc}_\text{Random} = 0.40
+\end{equation*}
+
+\noindent As expected the accuracies do not reach 100\%, this can be attributed to the classes not being linearly separable. Counter-intuitively random classification is less than 50\%; this may be attributed to the different element count of each class in the validation set.
+
+
 
 \end{document}
 
