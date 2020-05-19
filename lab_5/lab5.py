@@ -5,6 +5,7 @@ import torchbearer
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import re
 
 from torchvision import transforms
 from torch.utils.data import Dataset, DataLoader
@@ -23,8 +24,8 @@ def get_figure_dir() -> str:
 def save(fig: plt.Figure, name: str):
     figure_dir = get_figure_dir()
     fig.tight_layout()
-    fig.savefig(os.path.join(figure_dir, name + ".pgf"))
-    fig.savefig(os.path.join(figure_dir, name + ".pdf"))
+    fig.savefig(os.path.join(figure_dir, name + "_10.pgf"))
+    fig.savefig(os.path.join(figure_dir, name + "_10.pdf"))
 
 
 class MyDataset(Dataset):
@@ -130,7 +131,6 @@ class CNN3C(nn.Module):
         out = self.fc2(out)
         return out
 
-
 def train_model(
     model: nn.Module,
     train_loader: DataLoader,
@@ -142,9 +142,7 @@ def train_model(
     optimiser = optim.Adam(model.parameters())
 
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
-    trial = Trial(model, optimiser, loss_function, metrics=["accuracy"]).to(
-        device
-    )
+    trial = Trial(model, optimiser, loss_function, metrics=["loss"]).to(device)
     trial.with_generators(train_loader, val_generator=val_loader)
     trial.run(epochs=100)
     if output_path:
@@ -155,7 +153,7 @@ def train_model(
 def test_model(model: nn.Module, test_loader: DataLoader):
     loss_function = nn.MSELoss()
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
-    trial = Trial(model, None, loss_function, metrics=["accuracy"]).to(device)
+    trial = Trial(model, None, loss_function, metrics=["loss"]).to(device)
     trial.with_generators(train_loader, test_generator=test_loader)
     results = trial.evaluate(data_key=torchbearer.TEST_DATA)
     return results, trial
@@ -171,7 +169,7 @@ def seed(n: int = None):
 
 def im_plot(data: Tensor):
     fig, ax = plt.subplots(1, 1)
-    ax.imshow(data)
+    ax.imshow(data, origin='lower')
     ax.set_yticklabels([])
     ax.set_xticklabels([])
     ax.tick_params(
@@ -183,7 +181,9 @@ def im_plot(data: Tensor):
         right=False,
         labelbottom=False,
     )
+    fig.set_size_inches(w=2, h=2)
     return fig, ax
+
 
 def plot_params(params: Tuple[Tensor, Tensor], color: str):
     x0, x1 = 0, 40
@@ -199,11 +199,13 @@ def plot_params(params: Tuple[Tensor, Tensor], color: str):
     plt.xlim([x0, x1 - 1])
     plt.ylim([x0, y1 - 1])
 
+
 if __name__ == "__main__":
     plot = True
 
     if plot:
-        plot_idx = 3
+        plot_idx = 10
+
         matplotlib.use("pgf")
         matplotlib.rcParams.update(
             {
@@ -224,7 +226,7 @@ if __name__ == "__main__":
 
     # Ex 1
     print("Ex 1:")
-    seed(n=7)
+    seed(n=0)
     # Create data loaders
     train_loader = DataLoader(train_data, batch_size=128, shuffle=True)
     val_loader = DataLoader(val_data, batch_size=128, shuffle=True)
@@ -245,13 +247,13 @@ if __name__ == "__main__":
         im, params = test_data[plot_idx]
         est_params = model(im.unsqueeze(0))[0]
         fig, ax = im_plot(im.squeeze())
-        plot_params(params, "green")
-        plot_params(est_params.detach(), "red")
+        plot_params(params, "tab:green")
+        plot_params(est_params.detach(), "tab:blue")
         save(fig, "baseline")
 
     # Build the model
     print("Ex 2:")
-    seed(n=7)
+    seed(n=0)
     # Create data loaders
     train_loader = DataLoader(train_data, batch_size=128, shuffle=True)
     val_loader = DataLoader(val_data, batch_size=128, shuffle=True)
@@ -272,13 +274,13 @@ if __name__ == "__main__":
         im, params = test_data[plot_idx]
         est_params = model(im.unsqueeze(0))[0]
         fig, ax = im_plot(im.squeeze())
-        plot_params(params, "green")
-        plot_params(est_params.detach(), "red")
+        plot_params(params, "tab:green")
+        plot_params(est_params.detach(), "tab:blue")
         save(fig, "pooling")
 
     # Build the model
     print("Ex 3:")
-    seed(n=7)
+    seed(n=0)
     # Create data loaders
     train_loader = DataLoader(train_data, batch_size=128, shuffle=True)
     val_loader = DataLoader(val_data, batch_size=128, shuffle=True)
@@ -299,14 +301,18 @@ if __name__ == "__main__":
         im, params = test_data[plot_idx]
         est_params = model(im.unsqueeze(0))[0]
         fig, ax = im_plot(im.squeeze())
-        plot_params(params, "green")
-        plot_params(est_params.detach(), "red")
+        plot_params(params, "tab:green")
+        plot_params(est_params.detach(), "tab:blue")
         print(params, est_params)
         save(fig, "coord_conv")
+
         # Examples of positional channels
         idxx = torch.repeat_interleave(
-            torch.arange(-20, 20, dtype=torch.float).unsqueeze(0) / 40.0, repeats=40, dim=0,
+            torch.arange(-20, 20, dtype=torch.float).unsqueeze(0) / 40.0,
+            repeats=40,
+            dim=0,
         )
         idxy = idxx.clone().t()
-        save(im_plot(idxx)[0], "xx")
-        save(im_plot(idxy)[0], "xy")
+        # save(im_plot(idxx)[0], "xx")
+        # save(im_plot(idxy)[0], "xy")
+    plt.show()

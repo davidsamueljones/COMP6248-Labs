@@ -1,5 +1,5 @@
 \documentclass[11pt,a4paper]{article}
-\usepackage[top=1.2cm, bottom=1.8cm, left=1.8cm, right=1.8cm]{geometry}
+\usepackage[top=1cm, bottom=1.8cm, left=1.8cm, right=1.8cm]{geometry}
 
 \usepackage{float}
 \usepackage{subfig}
@@ -13,6 +13,13 @@
 \usepackage{amsmath}
 \usepackage{amsfonts,amssymb}
 \usepackage[makeroom]{cancel}
+\usepackage{import}
+
+\newcommand\inputpgf[2]{{
+\let\pgfimageWithoutPath\pgfimage
+\renewcommand{\pgfimage}[2][]{\pgfimageWithoutPath[##1]{#1/##2}}
+\input{#1/#2}
+}}
 
 % Declarations for tikz drawings
 \usepackage{tikz}
@@ -73,19 +80,50 @@ David Jones (dsj1n15@soton.ac.uk)}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 
 \begin{document}
-
 \maketitle
 \textbf{Task:} CNN Linear Regression
+
 \vspace{-0.5em}
-\section{Exercise 1}
-\textbf{Exercise 1.1:} CNN Baseline
+\section{Exercise 1 \& 2 \& 3}
+\textbf{Loss Function:}
+\noindent This is a regression task, therefore MSE between the expected parameters and estimated parameters is used as the loss function.\\
 
-\section{Exercise 2}
-\textbf{Exercise 2.1:} CNN with Global Pooling
+\noindent\textbf{Results:}
 
-\section{Exercise 3}
-\textbf{Exercise 3.1:} CNN with CoordConv Input
-% https://medium.com/@Cambridge_Spark/coordconv-layer-deep-learning-e02d728c2311
+\begin{figure}[H]
+    \centering
+    \begin{tabular}{c}
+    \subfloat[Baseline (Ex 1)]    {
+    \begin{tabular}{c}
+    \inputpgf{figures/}{baseline_1.pgf}\vspace{-1em}\\\inputpgf{figures/}{baseline_10.pgf}
+    \end{tabular}
+    }\hspace{-3em}
+    \subfloat[Global Pooling (Ex 2)]{
+    \begin{tabular}{c}
+    \inputpgf{figures/}{pooling_1.pgf}\vspace{-1em}\\\inputpgf{figures/}{pooling_10.pgf}
+    \end{tabular}
+    }\hspace{-3em}
+    \subfloat[CoordConv (Ex 3)]{
+    \begin{tabular}{c}
+        \inputpgf{figures/}{coord_conv_1.pgf}\vspace{-1em}\\\inputpgf{figures/}{coord_conv_10.pgf}
+    \end{tabular}
+    }
+    \end{tabular}
+    \caption{Two examples of linear regression using three CNN architectures. The green line shows the true parameters used to generate the yellow points, the blue line shows the estimated parameters.}
+    \label{fig:plots}
+\end{figure}
+\noindent The test loss for each exercise is as follows:
+\begin{equation*}
+\text{loss}_\text{Ex1} = 17.036\quad
+\text{loss}_\text{Ex2} = 16.717\quad
+\text{loss}_\text{Ex3} = 1.258
+\end{equation*}
+\noindent These losses suggests that performance of Ex3 is far better than the first two. Visual plotting of the estimated parameters and actual parameters back this up. Both Ex1 and Ex2 struggle to fit the gradient even if the y-intercept is close. Ex3 reasonably fits both the gradient and y-intercept. Note that performance of the CNN does not match a typical linear regression problem where loss is calculated between raw data points and their estimated values.
+
+\vspace{0.5em}
+\noindent\textbf{Exercise 3 Rational:}\vspace{0.5em}\\
+\noindent The approach taken for Exercise 3 is known as CoordConv. The rational is to hardcode cartesian coordinate data alongside other channel data such that a filter (convolution kernel) knows where it is when being applied; this breaks the translation equivariance of typical convolution.
 
 \end{document}
 
+ 
