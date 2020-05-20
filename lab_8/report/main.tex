@@ -77,14 +77,22 @@ David Jones (dsj1n15@soton.ac.uk)}
 \maketitle
 \textbf{Task:} Exploring Latent Spaces
 \vspace{-0.5em}
-\section{Exercise 1}
-\textbf{Exercise 1.1:} Systematically Sampling a VAE
+\section{Exercise 1 \& 2}
+% \textbf{Exercise 1.1:} Systematically Sampling a VAE
+Systematically sampling of the 2D latent space of an Variational Autoencoder (VAE) and Autoencoder (AE) across $z= -4\enskip \text{to}\enskip 4$ for both dimensions. Top left: (-4, 4). Note that the AE architecture is expanded from the original lab to include a dense hidden layer (ReLU activation) for both encoding and decoding; this was required to reduce artefacts in reconstructions.  \\
 
+\begin{figure}[H]
+    \centering
+    \begin{tabular}{ccc}
+    \subfloat[VAE (Ex 1)]{\includegraphics[width=3.5in]{figures/vae_sample.png}}
+    \hspace{0.5em}
+    \subfloat[AE (Ex 2)]{\includegraphics[width=3.5in]{figures/ae_sample.png}}
+    \end{tabular}
+    \caption{Latent space sampling trained on the Fashion-MNIST dataset.}
+    \label{fig:pca_sg}
+\end{figure}
 
-\section{Exercise 2}
-\noindent\textbf{Exercise 2.1:} Systematically Sampling an Autoencoder
-
-\noindent\textbf{Exercise 2.2:} Comparing the Latent Spaces
+\noindent At first glance, sampling from both models has resulted in images like those originally in the Fashion-MNIST dataset. However, there are notable differences in generation capability of each model. The VAE has smooth transitions between samples that are close in the latent space; often incorporating features from multiple items in the original dataset, e.g. heeled boots. The AE has no formal structure dictated and therefore does not need to ensure that two close points give a similar result; this typically leads to larger differences between items. Additionally, the AE is not regularised to always give a meaningful result; this has occurred in the example (bottom-middle).
 
 
 \end{document}
