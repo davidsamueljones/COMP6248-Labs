@@ -78,9 +78,31 @@ David Jones (dsj1n15@soton.ac.uk)}
 \textbf{Task:} Transfer Learning
 \vspace{-0.5em}
 \section{Exercise 1}
-\textbf{Exercise 1.1:} Finetuning ResNet50
+\textbf{Exercise 1.1:} Finetuning ResNet50\vspace{0.5em}\\
+Model changes on the pre-trained ResNet50 model for the \texttt{Boat} dataset:
+\begin{enumerate}
+    \item Replaced the Average Pooling layer prior to the linear output with an Adaptive Average Pooling layer so the model can handle non-square inputs.
+    \item Replaced the Linear Output Layer with a newly initialised Linear Layer for the number of classes in the training dataset (16).
+\end{enumerate}
 
-\noindent\textbf{Exercise 1.2:} Finetuned vs SVM Feature Classifier
+\noindent The training dataset is very small (3474 images) compared to that the original \texttt{resnet50} model was trained on (ImageNet -- approximately one million images). Therefore training anything except the output layer is likely to lead to major overfitting. Freezing all other layers, the model was trained with a learning rate of $\num{1e-3}$ for 18 epochs (any more validation performance dropped). This yielded:
+\begin{equation*}
+    \text{Acc}_\text{train} = 87.3\% \quad \text{Acc}_\text{val} = 74.3\% \quad \text{Acc}_\text{train} = 76.4\% \quad \text{(FT-A)}
+\end{equation*}
+Dropping the learning rate to $\num{1e-6}$ for a further 10 epochs yielded:
+\begin{equation*}
+    \quad\text{Acc}_\text{train} = 90.3\% \quad \text{Acc}_\text{val} = 74.3\% \quad \text{Acc}_\text{train} = 77.9\% \quad \text{(FT-B)}
+\end{equation*}
+It was also attempted to unfreeze \texttt{layer4} of \texttt{resnet50} for this learning rate; this improved test accuracy but did not improve validation or test. This is overfitting as expected.\\
+
+\noindent\textbf{Exercise 1.2:} Finetuned vs SVM Feature Classifier\vspace{0.5em}\\
+The overall accuracies of the finetuned networks are above. The SVM model yielded:
+
+\begin{equation*}
+    \quad\text{Acc}_\text{train} = 87.8\% \quad \text{Acc}_\text{val} = 82.5\% \quad \text{Acc}_\text{train} = 87.2\% \quad \text{(SVM)}
+\end{equation*}
+This is with training times 96\% faster than training FT-A and 98\% faster than training FT-B.
+The consistent accuracies indicate the model is not overfitting. Assessment via \texttt{sklearn}'s classficiation report shows that classification performance is worst for all models for classes with least training data. This is more apparent with the SVM model where much of the high accuracy can be attributed to high classification accuracy of Water, Mototopo and VaporettoACTV (the dominant classes). The speed and overall accuracy clearly indicate the SVM approach performed better than the finetuning approaches.
 
 \end{document}
 

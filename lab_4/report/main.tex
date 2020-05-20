@@ -1,5 +1,5 @@
 \documentclass[11pt,a4paper]{article}
-\usepackage[top=1.2cm, bottom=1.8cm, left=1.8cm, right=1.8cm]{geometry}
+\usepackage[top=0.2cm, bottom=1.8cm, left=1.8cm, right=1.8cm]{geometry}
 
 \usepackage{float}
 \usepackage{subfig}
@@ -75,10 +75,21 @@ David Jones (dsj1n15@soton.ac.uk)}
 \begin{document}
 
 \maketitle
-\textbf{Task:} Wide MLPs on MNIST
-\vspace{-0.5em}
-\section{Exercise 1}
+\textbf{Task:} Wide MLPs on MNIST\\
 
+\noindent Overfitting is typically visible either by: a validation accuracy that is dramatically lower than training accuracy, or a validation accuracy that decreases as epoch count is increased. This example does not heavily exhibit either of these phenomena, likely due to the MNIST dataset being largely linearly separable and there being a small number of extractable features present. That being said, the experimental results show that around 25 hidden units the training accuracy does start to slightly diverge from validation accuracy indicating that features are being learnt from the training set that are not present in the validation set. However, the model never fully learns the training dataset even with the 250,000 hidden unit, 200 epoch model.
+
+\begin{figure}[H]
+    \centering
+    \begin{tabular}{c}
+        \subfloat[Hidden Units: 5 : $\text{Acc}_\text{test}=89\%, \text{Acc}_\text{val}=89\%$]{\input{figures/000005_loss.pgf}\input{figures/000005_acc.pgf}}\\
+        \subfloat[Hidden Units: 25 : $\text{Acc}_\text{test}=96\%, \text{Acc}_\text{val}=95\%$]{\input{figures/000025_loss.pgf}\input{figures/000025_acc.pgf}}\\
+        \subfloat[Hidden Units: 200 : $\text{Acc}_\text{test}=99\%, \text{Acc}_\text{val}=98\%$]{\input{figures/000200_loss.pgf}\input{figures/000200_acc.pgf}}\\
+        \subfloat[Hidden Units: 250,000 : $\text{Acc}_\text{test}=99\%, \text{Acc}_\text{val}=98\%$]{\input{figures/250000_loss.pgf}\input{figures/250000_acc.pgf}}\\
+    \end{tabular}
+    \caption{Accuracy and loss plots for varying hidden unit count.}
+    \label{fig:pca_sg}
+\end{figure}
 
 \end{document}
 
